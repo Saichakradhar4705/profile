@@ -1,10 +1,15 @@
 {
   "name": "profile",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Sai's portfolio site",
+  "main": "dist/script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild src/script.ts --bundle --minify --sourcemap --outfile=dist/script.js",
+    "serve": "npx http-server . -p 8080"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.27.3",
+    "http-server": "^14.1.1"
+  }
 }
