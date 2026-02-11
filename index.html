@@ -1,10 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Simple responsive portfolio showcasing projects and contact form">
+    <title>Sai — Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-$END$
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="#">Sai</a>
+        <nav class="site-nav" id="site-nav">
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </div>
+</header>
+
+<main>
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Hi, I'm Sai.</h1>
+            <p class="lead">Front-end developer building accessible, responsive web experiences.</p>
+            <p><a class="btn" href="#projects">See my work</a></p>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+            <h2>About</h2>
+            <p>Hello — I'm a front-end developer focused on building clean, accessible user interfaces. I enjoy working with HTML, CSS, and JavaScript and learning new web technologies.</p>
+            <h3>Skills</h3>
+            <ul class="skills">
+                <li>HTML &amp; Semantic Markup</li>
+                <li>CSS (Flexbox & Grid)</li>
+                <li>JavaScript (ES6+)</li>
+                <li>Responsive Design & Accessibility</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="projects" id="projects">
+        <div class="container">
+            <h2>Projects</h2>
+            <div id="repos" class="projects-grid">
+                <!-- Repos will be loaded here from GitHub API for user Saichakradhar4705 -->
+                <p>Loading projects from GitHub…</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2>Contact</h2>
+            <p>If you'd like to work together, send a message — I'll get back to you.</p>
+            <form id="contact-form" class="contact-form" novalidate>
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" required>
+
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+
+                <button type="submit" class="btn">Send message</button>
+                <p id="form-status" class="form-status" aria-live="polite"></p>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© <span id="year"></span> Sai — Built with ❤️</p>
+        <p class="social">
+            <a href="https://github.com/Saichakradhar4705" aria-label="GitHub" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.linkedin.com/in/sai-chakradhar-kondeti-744843291/?skipRedirect=true" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </p>
+    </div>
+</footer>
+
+<script src="script.js" defer></script>
 </body>
 </html>
