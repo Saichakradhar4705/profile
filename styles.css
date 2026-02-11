@@ -15,8 +15,8 @@ body{margin:0;background:var(--bg);color:var(--text);line-height:1.5}
 .container{width:90%;max-width:var(--max-width);margin:0 auto}
 .header-inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 0}
 .logo{font-weight:700;color:var(--text);text-decoration:none;font-size:1.1rem}
-.site-nav{display:none}
-.site-nav a{display:inline-block;margin-left:1rem;color:var(--text);text-decoration:none}
+.site-nav{display:none;position:relative}
+.site-nav a{display:inline-block;margin-left:1rem;color:var(--text);text-decoration:none;position:relative;padding:.25rem .2rem}
 .nav-toggle{background:none;border:0;display:flex;flex-direction:column;gap:4px;padding:8px;cursor:pointer}
 .nav-toggle .bar{width:22px;height:2px;background:var(--text);display:block}
 .hero{padding:4rem 0 3rem}
@@ -51,6 +51,13 @@ body{margin:0;background:var(--bg);color:var(--text);line-height:1.5}
 .experience-item{border-left:3px solid var(--accent);padding:0.6rem 1rem;background:#fff;border-radius:6px}
 .experience-item h3{margin:0 0 .4rem}
 
+/* Navigation indicator (scroll link animation) */
+.site-nav .nav-indicator{position:absolute;bottom:-6px;left:0;height:3px;background:var(--accent);border-radius:3px;width:0;transform:translateX(0);transition:transform .22s cubic-bezier(.2,.9,.2,1),width .22s cubic-bezier(.2,.9,.2,1);pointer-events:none}
+.site-nav a.active{color:var(--accent);font-weight:600}
+
+/* Small click animation for nav links */
+a.nav-clicked{transform:translateY(2px);transition:transform .12s ease}
+
 /* Larger screens */
 @media(min-width:700px){
   .site-nav{display:block}
@@ -58,6 +65,11 @@ body{margin:0;background:var(--bg);color:var(--text);line-height:1.5}
   .hero h1{font-size:2.6rem}
   .projects-grid{grid-template-columns:repeat(3,1fr)}
   .experience-list{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Hide indicator on small screens where nav is toggled vertically */
+@media(max-width:699px){
+  .site-nav .nav-indicator{display:none}
 }
 
 /* Accessibility focus states */

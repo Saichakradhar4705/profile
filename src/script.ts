@@ -2,7 +2,7 @@
 const $ = <T extends HTMLElement | null>(selector: string): T | null => document.querySelector(selector) as T | null;
 
 // Mobile nav toggle
-const navToggle = $(HTMLButtonElement)('#nav-toggle');
+const navToggle = $('#nav-toggle') as HTMLButtonElement | null;
 const siteNav = $('#site-nav') as HTMLElement | null;
 if (navToggle && siteNav) {
   navToggle.addEventListener('click', () => {
@@ -25,36 +25,39 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(anchor => {
         navToggle.setAttribute('aria-expanded', 'false');
         siteNav.style.display = 'none';
       }
+      // small click animation for nav link
+      this.classList.add('nav-clicked');
+      setTimeout(() => this.classList.remove('nav-clicked'), 300);
     }
   });
 });
 
 // Simple form validation and fake submit
 const form = $('#contact-form') as HTMLFormElement | null;
-const status = $('#form-status') as HTMLElement | null;
-if (form && status) {
+const formStatus = $('#form-status') as HTMLElement | null;
+if (form && formStatus) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    status.textContent = '';
+    formStatus.textContent = '';
     const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
     const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
     const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
     if (!name || !email || !message) {
-      status.textContent = 'Please fill out all fields.';
-      status.classList.add('error');
+      formStatus.textContent = 'Please fill out all fields.';
+      formStatus.classList.add('error');
       return;
     }
     // basic email check
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      status.textContent = 'Please enter a valid email address.';
-      status.classList.add('error');
+      formStatus.textContent = 'Please enter a valid email address.';
+      formStatus.classList.add('error');
       return;
     }
-    status.textContent = 'Sending…';
-    status.classList.remove('error');
+    formStatus.textContent = 'Sending…';
+    formStatus.classList.remove('error');
     // simulate network
     setTimeout(() => {
-      status.textContent = 'Thanks — I will get back to you soon.';
+      formStatus.textContent = 'Thanks — I will get back to you soon.';
       form.reset();
     }, 900);
   });
@@ -91,7 +94,11 @@ async function loadRepos(username = 'Saichakradhar4705') {
 
   try {
     const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=50&sort=updated`);
-    if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+    if (!res.ok) {
+      // graceful error handling instead of throw
+      reposContainer.innerHTML = `<p>GitHub API error: ${res.status} ${res.statusText}</p>`;
+      return;
+    }
     const data = await res.json() as Repo[];
     if (!Array.isArray(data) || data.length === 0) {
       reposContainer.innerHTML = '<p>No public repositories found.</p>';
@@ -133,6 +140,73 @@ window.addEventListener('resize', debounce(() => {
   // future responsive adjustments could be placed here
 }, 200));
 
-// Initialize
-loadRepos();
+// --- New: scroll link indicator & scroll-spy ---
+function initNavIndicator() {
+  const nav = siteNav; // reuse top-level selector to avoid duplicate queries
+  if (!nav) return;
+  // create indicator element
+  let indicator = nav.querySelector<HTMLElement>('.nav-indicator');
+  if (!indicator) {
+    indicator = document.createElement('span');
+    indicator.className = 'nav-indicator';
+    nav.appendChild(indicator);
+  }
 
+  const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+  const sections = links
+    .map(l => {
+      const href = l.getAttribute('href');
+      const sec = href && href.startsWith('#') ? document.querySelector<HTMLElement>(href) : null;
+      return {link: l, section: sec};
+    })
+    .filter(x => x.section) as {link: HTMLAnchorElement, section: HTMLElement}[];
+
+  function updateIndicatorFor(link: HTMLAnchorElement | null) {
+    if (!link || !nav) {
+      indicator!.style.width = '0px';
+      return;
+    }
+    const rect = link.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = rect.left - navRect.left;
+    indicator!.style.transform = `translateX(${left}px)`;
+    indicator!.style.width = `${rect.width}px`;
+    // mark active
+    links.forEach(l => l.classList.toggle('active', l === link));
+  }
+
+  // Scroll-spy: choose the section nearest the viewport center
+  function findActiveByViewport() {
+    const viewportMiddle = window.innerHeight / 2;
+    let bestLink: HTMLAnchorElement | null = null;
+    let bestDiff = Number.POSITIVE_INFINITY;
+    sections.forEach(s => {
+      const rect = s.section.getBoundingClientRect();
+      const diff = Math.abs(rect.top - viewportMiddle);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestLink = s.link;
+      }
+    });
+    if (bestLink) updateIndicatorFor(bestLink);
+  }
+
+  // observe scroll and resize to update the indicator
+  window.addEventListener('scroll', debounce(() => findActiveByViewport(), 80));
+
+  // Update on resize / load
+  window.addEventListener('resize', debounce(() => {
+    const active = nav.querySelector<HTMLAnchorElement>('a.active');
+    updateIndicatorFor(active || links[0] || null);
+  }, 120));
+
+  // initial position (use first link)
+  setTimeout(() => {
+    updateIndicatorFor(nav.querySelector<HTMLAnchorElement>('a.active') || links[0] || null);
+    findActiveByViewport();
+  }, 60);
+}
+
+// Initialize
+initNavIndicator();
+loadRepos();
