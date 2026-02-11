@@ -210,3 +210,32 @@ function initNavIndicator() {
 // Initialize
 initNavIndicator();
 loadRepos();
+
+// Palette switcher: persist user's choice in localStorage and apply class to :root
+const PALETTE_KEY = 'site:palette';
+function applyPalette(name: string | null) {
+  const root = document.documentElement;
+  root.classList.remove('palette-red', 'palette-crimson', 'palette-charcoal');
+  if (name) root.classList.add(`palette-${name}`);
+  // update aria-pressed
+  document.querySelectorAll<HTMLButtonElement>('.palette-btn').forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.getAttribute('data-palette') === name));
+  });
+}
+
+function initPaletteSwitcher() {
+  const saved = localStorage.getItem(PALETTE_KEY);
+  const initial = saved || 'red';
+  applyPalette(initial);
+
+  document.querySelectorAll<HTMLButtonElement>('.palette-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.getAttribute('data-palette');
+      if (!p) return;
+      applyPalette(p);
+      localStorage.setItem(PALETTE_KEY, p);
+    });
+  });
+}
+
+initPaletteSwitcher();
